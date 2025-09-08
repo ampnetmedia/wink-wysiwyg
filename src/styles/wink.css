@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* W-Ink WYSIWYG Editor Styles */
+
+/* Base editor styles */
+.wink-editor {
+  @apply relative bg-white border border-gray-200 rounded-lg shadow-editor;
+}
+
+.wink-editor:focus-within {
+  @apply border-blue-500 shadow-editor-lg;
+}
+
+/* Editor content area */
+.wink-editor-content {
+  @apply min-h-[120px] p-4 focus:outline-none;
+}
+
+.wink-editor-content.ProseMirror {
+  @apply prose prose-sm max-w-none;
+}
+
+.wink-editor-content.ProseMirror:focus {
+  @apply outline-none;
+}
+
+/* Toolbar styles */
+.wink-toolbar {
+  @apply flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg;
+}
+
+.wink-toolbar-group {
+  @apply flex items-center gap-1;
+}
+
+.wink-toolbar-separator {
+  @apply w-px h-6 bg-gray-300 mx-2;
+}
+
+/* Button styles */
+.wink-button {
+  @apply inline-flex items-center justify-center w-8 h-8 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200;
+}
+
+.wink-button.active {
+  @apply bg-blue-100 text-blue-700 border-blue-300;
+}
+
+.wink-button:hover:not(:disabled) {
+  @apply bg-gray-100;
+}
+
+.wink-button:active:not(:disabled) {
+  @apply bg-gray-200;
+}
+
+/* Dropdown styles */
+.wink-dropdown {
+  @apply relative inline-block;
+}
+
+.wink-dropdown-content {
+  @apply absolute z-50 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg;
+}
+
+.wink-dropdown-item {
+  @apply block w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer;
+}
+
+/* Mention styles */
+.wink-mention {
+  @apply inline-flex items-center px-2 py-1 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-200 rounded-md;
+}
+
+.wink-mention-suggestion {
+  @apply flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer;
+}
+
+.wink-mention-suggestion.active {
+  @apply bg-blue-100 text-blue-700;
+}
+
+/* Hashtag styles */
+.wink-hashtag {
+  @apply inline-flex items-center px-2 py-1 text-sm font-medium text-purple-700 bg-purple-100 border border-purple-200 rounded-md;
+}
+
+.wink-hashtag:hover {
+  @apply bg-purple-200;
+}
+
+/* Image styles */
+.wink-image {
+  @apply max-w-full h-auto rounded-lg shadow-sm;
+}
+
+.wink-image-wrapper {
+  @apply relative inline-block;
+}
+
+.wink-image-wrapper.selected {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Placeholder styles */
+.wink-placeholder {
+  @apply absolute top-4 left-4 text-gray-400 pointer-events-none;
+}
+
+.wink-placeholder.has-content {
+  @apply hidden;
+}
+
+/* Loading states */
+.wink-loading {
+  @apply animate-pulse;
+}
+
+.wink-spinner {
+  @apply animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-600 rounded-full;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .wink-toolbar {
+    @apply flex-wrap gap-1;
+  }
+
+  .wink-toolbar-group {
+    @apply flex-wrap;
+  }
+
+  .wink-button {
+    @apply w-7 h-7 text-xs;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .wink-editor {
+    @apply bg-gray-900 border-gray-700;
+  }
+
+  .wink-editor-content {
+    @apply text-gray-100;
+  }
+
+  .wink-toolbar {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .wink-button {
+    @apply text-gray-300 bg-gray-800 border-gray-600 hover:bg-gray-700 hover:text-gray-100;
+  }
+
+  .wink-button.active {
+    @apply bg-blue-900 text-blue-300 border-blue-700;
+  }
+
+  .wink-dropdown-content {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .wink-dropdown-item {
+    @apply text-gray-300 hover:bg-gray-700 hover:text-gray-100;
+  }
+
+  .wink-placeholder {
+    @apply text-gray-500;
+  }
+}
+
+/* Accessibility improvements */
+.wink-editor:focus-within {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+}
+
+.wink-button:focus {
+  @apply ring-2 ring-blue-500 ring-offset-1;
+}
+
+/* Custom scrollbar for editor content */
+.wink-editor-content::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.wink-editor-content::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded;
+}
+
+.wink-editor-content::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded hover:bg-gray-400;
+}
+
+/* Animation for smooth transitions */
+.wink-fade-in {
+  @apply animate-fade-in;
+}
+
+.wink-slide-up {
+  @apply animate-slide-up;
+}
+
+/* Print styles */
+@media print {
+  .wink-toolbar {
+    @apply hidden;
+  }
+
+  .wink-editor {
+    @apply border-none shadow-none;
+  }
+
+  .wink-editor-content {
+    @apply p-0;
+  }
+}
