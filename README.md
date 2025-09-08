@@ -79,6 +79,20 @@ import { WInkEditor } from "@ampnet/wink-wysiwyg";
 />
 ```
 
+### With Custom Primary Color Theme
+
+```tsx
+<WInkEditor
+  content={content}
+  onChange={setContent}
+  primaryColor="#ff6b6b" // Custom red theme
+  enableMentions={true}
+  enableHashtags={true}
+  onMentionClick={(handle) => console.log("Mention clicked:", handle)}
+  onHashtagClick={(tag) => console.log("Hashtag clicked:", tag)}
+/>
+```
+
 ### Custom Configuration
 
 ```tsx
@@ -110,6 +124,7 @@ import { WInkEditor } from "@ampnet/wink-wysiwyg";
 | `showToolbar`           | `boolean`                                | `true`              | Whether to show toolbar             |
 | `size`                  | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `'md'`              | Editor size                         |
 | `theme`                 | `'light' \| 'dark' \| 'auto'`            | `'light'`           | Editor theme                        |
+| `primaryColor`          | `string`                                 | -                   | Primary color for theming (hex)     |
 | `enableMentions`        | `boolean`                                | `false`             | Enable @mention support             |
 | `enableHashtags`        | `boolean`                                | `false`             | Enable #hashtag support             |
 | `enableImages`          | `boolean`                                | `true`              | Enable image insertion              |
@@ -173,29 +188,62 @@ const {
 });
 ```
 
-## Styling
+## Theming
 
-The editor comes with built-in TailwindCSS styles. You can customize the appearance by:
+The editor supports custom theming through a primary color system. You can easily customize the appearance to match your brand or application design.
+
+### Primary Color Theming
+
+The `primaryColor` prop allows you to set a custom color that automatically generates a cohesive theme:
+
+```tsx
+<WInkEditor
+  content={content}
+  onChange={setContent}
+  primaryColor="#ff6b6b" // Custom red theme
+  enableMentions={true}
+  enableHashtags={true}
+/>
+```
+
+**What gets themed:**
+- **Toolbar buttons**: Hover and active states use the primary color
+- **@mentions**: Background, text, and border colors use primary color variations
+- **#hashtags**: Background, text, and border colors use primary color variations
+- **Interactive elements**: All hover effects respect the primary color theme
+
+**Color variations generated:**
+- Light variations (10% opacity) for backgrounds
+- Medium variations (30% opacity) for borders
+- Dark variations (80% opacity) for hover states
+- Full opacity for text and active states
+
+### CSS Variables
+
+The editor uses CSS custom properties that can be overridden:
+
+```css
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-primary-dark: #1d4ed8;
+  --color-mention-bg: var(--color-primary-light);
+  --color-mention-text: var(--color-primary-dark);
+  --color-mention-border: var(--color-primary);
+  --color-hashtag-bg: var(--color-primary-light);
+  --color-hashtag-text: var(--color-primary-dark);
+  --color-hashtag-border: var(--color-primary);
+}
+```
+
+### Advanced Styling
+
+You can further customize the appearance by:
 
 1. **CSS Custom Properties** - Override CSS variables
 2. **TailwindCSS Classes** - Use Tailwind utility classes
 3. **Custom CSS** - Add your own styles
-
-### CSS Variables
-
-```css
-:root {
-  --editor-bg: #ffffff;
-  --editor-border: #e5e7eb;
-  --editor-text: #111827;
-  --editor-muted: #6b7280;
-  --editor-accent: #3b82f6;
-  --mention-bg: #dbeafe;
-  --mention-text: #1e40af;
-  --hashtag-bg: #f3e8ff;
-  --hashtag-text: #7c3aed;
-}
-```
 
 ### Custom Classes
 
@@ -309,46 +357,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - 🐛 [Issue Tracker](https://github.com/ampnet-media/wink-wysiwyg/issues)
 - 💬 [Discussions](https://github.com/ampnet-media/wink-wysiwyg/discussions)
 
-## Development Status
-
-- ✅ **Phase 1**: Foundation (Completed)
-  - Project setup with TypeScript and Rollup
-  - Core WInkEditor component with TipTap integration
-  - Basic toolbar with formatting buttons
-  - TailwindCSS styling system
-  - Plugin architecture foundation
-  - Type definitions and hooks
-
-- ✅ **Phase 2**: Core Features (Completed)
-  - Advanced formatting features (bold, italic, underline, strikethrough)
-  - Text alignment (left, center, right, justify)
-  - Headings (H1-H6) with dropdown selector
-  - Lists (bullet and numbered) with proper styling
-  - Blockquotes and code blocks
-  - Link insertion and management
-  - Image support with drag & drop
-  - Undo/redo functionality
-  - Comprehensive keyboard shortcuts
-  - Enhanced copy/paste with Word/Google Docs support
-  - Smart focus management and navigation
-  - Animated toolbar buttons with hover effects
-  - Light theme with proper CSS isolation
-
-- ✅ **Phase 3**: Social Features (Partially Completed)
-  - ✅ @mention system implementation with highlighting, click handlers, and suggestions
-  - ✅ #hashtag system implementation with highlighting and click handlers
-  - 🚧 Integration APIs
-
-- ⏳ **Phase 4**: Extensibility (Planned)
-  - Plugin system completion
-  - Custom plugins
-  - Advanced features
-
-- ⏳ **Phase 5**: Testing & Documentation (Planned)
-  - Comprehensive testing suite
-  - API documentation
-  - Package preparation
-
 ## Version Management
 
 This project uses semantic versioning (semver) for version management. Use the following npm scripts to manage versions:
@@ -389,6 +397,15 @@ npm version 0.2.0-beta.1
 ```
 
 ## Changelog
+
+### 0.2.0
+
+- ✨ **New Feature**: Primary color theming system
+  - Added `primaryColor` prop for custom color theming
+  - Automatic generation of color variations for mentions and hashtags
+  - Dynamic toolbar button theming with hover effects
+  - CSS custom properties for advanced customization
+  - Backward compatible with existing implementations
 
 ### 0.1.0
 

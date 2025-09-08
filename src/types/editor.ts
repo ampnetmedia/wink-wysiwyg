@@ -95,6 +95,8 @@ export interface WInkEditorProps extends WInkEditorConfig {
   theme?: EditorTheme;
   /** Mode of the editor */
   mode?: EditorMode;
+  /** Primary color for theming (hex color code) */
+  primaryColor?: string;
   /** Custom toolbar configuration */
   toolbar?: ToolbarGroup[];
   /** Whether to enable mentions */

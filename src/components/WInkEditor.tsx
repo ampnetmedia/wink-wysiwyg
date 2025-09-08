@@ -45,6 +45,7 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
   size = "md",
   theme = "light",
   mode = "wysiwyg",
+  primaryColor,
   enableMentions = true,
   enableHashtags = true,
   enableImages = true,
@@ -67,6 +68,44 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
     canUndo: false,
     canRedo: false,
   });
+
+  // Generate CSS custom properties for primary color theming
+  const getPrimaryColorStyles = useCallback(() => {
+    if (!primaryColor) return {};
+
+    // Convert hex to RGB for opacity variations
+    const hexToRgb = (hex: string) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16),
+          }
+        : null;
+    };
+
+    const rgb = hexToRgb(primaryColor);
+    if (!rgb) return {};
+
+    // Generate color variations
+    const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`;
+    const mediumColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`;
+    const darkColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.8)`;
+
+    return {
+      "--color-primary": primaryColor,
+      "--color-primary-hover": darkColor,
+      "--color-primary-light": lightColor,
+      "--color-primary-dark": primaryColor,
+      "--color-mention-bg": lightColor,
+      "--color-mention-text": primaryColor,
+      "--color-mention-border": mediumColor,
+      "--color-hashtag-bg": lightColor,
+      "--color-hashtag-text": primaryColor,
+      "--color-hashtag-border": mediumColor,
+    } as React.CSSProperties;
+  }, [primaryColor]);
 
   // Create TipTap extensions (memoized)
   const tipTapExtensions: any[] = useMemo(() => {
@@ -122,8 +161,6 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
         MentionHighlight.configure({
           HTMLAttributes: {
             class: "wink-mention",
-            style:
-              "background:#DBEAFE;color:#1D4ED8;border-radius:4px;padding:0 2px;border:1px solid #BFDBFE;",
           },
         })
       );
@@ -134,8 +171,6 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
         HashtagHighlight.configure({
           HTMLAttributes: {
             class: "wink-hashtag",
-            style:
-              "background:#F3E8FF;color:#7C3AED;border-radius:4px;padding:0 2px;border:1px solid #DDD6FE;",
           },
         })
       );
@@ -398,6 +433,7 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
             ? `${maxHeight}px`
             : maxHeight
           : undefined,
+        ...getPrimaryColorStyles(),
       }}
     >
       {showToolbar && (
