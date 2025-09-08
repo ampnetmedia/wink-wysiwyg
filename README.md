@@ -69,8 +69,11 @@ import { WInkEditor } from "@ampnet/wink-wysiwyg";
   onChange={setContent}
   enableMentions={true}
   enableHashtags={true}
-  onMentionSelect={(mention) => console.log("Mentioned:", mention)}
-  onHashtagClick={(hashtag) => console.log("Hashtag clicked:", hashtag)}
+  onMentionClick={(handle) => console.log("Mention clicked:", handle)}
+  getMentionSuggestions={(query) => {
+    // Return filtered suggestions based on query
+    return suggestions.filter(s => s.toLowerCase().includes(query.toLowerCase()));
+  }}
 />
 ```
 
@@ -105,14 +108,16 @@ import { WInkEditor } from "@ampnet/wink-wysiwyg";
 | `showToolbar`      | `boolean`                                | `true`              | Whether to show toolbar       |
 | `size`             | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `'md'`              | Editor size                   |
 | `theme`            | `'light' \| 'dark' \| 'auto'`            | `'light'`           | Editor theme                  |
-| `enableMentions`   | `boolean`                                | `true`              | Enable @mention support       |
-| `enableHashtags`   | `boolean`                                | `true`              | Enable #hashtag support       |
+| `enableMentions`   | `boolean`                                | `false`             | Enable @mention support       |
+| `enableHashtags`   | `boolean`                                | `false`             | Enable #hashtag support       |
 | `enableImages`     | `boolean`                                | `true`              | Enable image insertion        |
 | `enableLinks`      | `boolean`                                | `true`              | Enable link insertion         |
 | `enableCodeBlocks` | `boolean`                                | `true`              | Enable code blocks            |
 | `autoFocus`        | `boolean`                                | `false`             | Auto-focus on mount           |
 | `minHeight`        | `string \| number`                       | `'120px'`           | Minimum editor height         |
 | `maxHeight`        | `string \| number`                       | -                   | Maximum editor height         |
+| `onMentionClick`   | `(handle: string) => void`               | -                   | Callback when mention is clicked |
+| `getMentionSuggestions` | `(query: string) => string[]`        | -                   | Function to get mention suggestions |
 
 ### Hooks
 
@@ -326,10 +331,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
   - Animated toolbar buttons with hover effects
   - Light theme with proper CSS isolation
 
-- 🚧 **Phase 3**: Social Features (In Progress)
-  - @mention system implementation
-  - #hashtag system implementation
-  - Integration APIs
+- ✅ **Phase 3**: Social Features (Partially Completed)
+  - ✅ @mention system implementation with highlighting, click handlers, and suggestions
+  - 🚧 #hashtag system implementation
+  - 🚧 Integration APIs
 
 - ⏳ **Phase 4**: Extensibility (Planned)
   - Plugin system completion

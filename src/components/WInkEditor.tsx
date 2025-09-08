@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -6,12 +12,14 @@ import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import { ImageExtension } from "../extensions/ImageExtension";
+import { MentionHighlight } from "../extensions/MentionHighlight";
 import { WInkEditorProps, EditorState } from "../types/editor";
 import { useDragDrop } from "../hooks/useDragDrop";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { useFocusManagement } from "../hooks/useFocusManagement";
 import { useCopyPaste } from "../hooks/useCopyPaste";
 import Toolbar from "./Toolbar";
+import { Editor as TiptapEditor } from "@tiptap/react";
 
 /**
  * W-Ink WYSIWYG Editor Component
@@ -45,6 +53,8 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
   plugins = [],
   extensions = [],
   onImageUpload,
+  onMentionClick,
+  getMentionSuggestions,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [editorState, setEditorState] = useState<EditorState>({
@@ -56,55 +66,70 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
     canRedo: false,
   });
 
-  // Create TipTap extensions
-  const tipTapExtensions: any[] = [
-    StarterKit.configure({
-      // Disable features we'll handle separately
-      heading: {
-        levels: [1, 2, 3, 4, 5, 6],
-      },
-      bulletList: {
-        keepMarks: true,
-        keepAttributes: false,
-      },
-      orderedList: {
-        keepMarks: true,
-        keepAttributes: false,
-      },
-    }),
-    Underline,
-    Placeholder.configure({
-      placeholder,
-    }),
-    TextAlign.configure({
-      types: ["heading", "paragraph"],
-    }),
-  ];
-
-  // Add conditional extensions
-  if (enableLinks) {
-    tipTapExtensions.push(
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: "wink-link",
+  // Create TipTap extensions (memoized)
+  const tipTapExtensions: any[] = useMemo(() => {
+    const exts: any[] = [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3, 4, 5, 6],
         },
-      })
-    );
-  }
-
-  if (enableImages) {
-    tipTapExtensions.push(
-      ImageExtension.configure({
-        HTMLAttributes: {
-          class: "wink-image",
+        bulletList: {
+          keepMarks: true,
+          keepAttributes: false,
         },
-      })
-    );
-  }
+        orderedList: {
+          keepMarks: true,
+          keepAttributes: false,
+        },
+        // Disable extensions that we add separately to avoid duplicates
+        link: false,
+        underline: false,
+      }),
+      Underline,
+      Placeholder.configure({
+        placeholder,
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+    ];
 
-  // Add custom extensions
-  tipTapExtensions.push(...extensions);
+    if (enableLinks) {
+      exts.push(
+        Link.configure({
+          openOnClick: false,
+          HTMLAttributes: {
+            class: "wink-link",
+          },
+        })
+      );
+    }
+
+    if (enableImages) {
+      exts.push(
+        ImageExtension.configure({
+          HTMLAttributes: {
+            class: "wink-image",
+          },
+        })
+      );
+    }
+
+    if (enableMentions) {
+      exts.push(
+        MentionHighlight.configure({
+          HTMLAttributes: {
+            class: "wink-mention",
+            style:
+              "background:#DBEAFE;color:#1D4ED8;border-radius:4px;padding:0 2px;border:1px solid #BFDBFE;",
+          },
+        })
+      );
+    }
+
+    exts.push(...extensions);
+    return exts;
+  }, [enableLinks, enableImages, enableMentions, placeholder, extensions]);
 
   // Create the editor instance
   const editor = useEditor({
@@ -135,6 +160,41 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
               ),
             },
       });
+
+      // Lightweight @mention highlighter: scan current paragraph tokens and apply mark
+      try {
+        if (enableMentions) {
+          const { state } = editor;
+          const { selection } = state;
+          const { $from } = selection;
+          const parent = $from.parent;
+          const startPos = $from.start();
+          const text = parent.textContent || "";
+          // Match @handle; allow dots inside, but not as the trailing char, and stop before punctuation
+          const regex = /@([A-Za-z0-9_.-]*[A-Za-z0-9_-])(?![A-Za-z0-9_-])/g;
+          let match: RegExpExecArray | null;
+          const tr = state.tr;
+          // Clear existing marks of this type in the paragraph to avoid duplicates
+          const type = (editor.schema.marks as any)["mentionHighlight"];
+          if (type) {
+            tr.removeMark(startPos, startPos + text.length, type);
+          }
+          while ((match = regex.exec(text)) !== null) {
+            const from = startPos + match.index;
+            const to = from + match[0].length;
+            if (type) {
+              tr.addMark(
+                from,
+                to,
+                type.create({ "data-mention": "true", "data-handle": match[1] })
+              );
+            }
+          }
+          if (tr.steps.length > 0) {
+            editor.view.dispatch(tr);
+          }
+        }
+      } catch (_) {}
     },
     onSelectionUpdate: ({ editor }) => {
       setEditorState((prev) => ({
@@ -300,8 +360,26 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
 
       <div
         className={`wink-editor-content ${getSizeClasses()} ${contentClassName}`}
-        onClick={() => editor?.commands.focus()}
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          const el = target.closest(
+            '[data-mention="true"]'
+          ) as HTMLElement | null;
+          if (el && onMentionClick) {
+            const handle = el.getAttribute("data-handle") || "";
+            onMentionClick(handle);
+            return;
+          }
+          editor?.commands.focus();
+        }}
       >
+        {/* Suggestions dropdown */}
+        {enableMentions && getMentionSuggestions && editor && (
+          <MentionSuggestions
+            editor={editor}
+            getMentionSuggestions={getMentionSuggestions}
+          />
+        )}
         <EditorContent editor={editor} />
       </div>
     </div>
@@ -309,3 +387,107 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
 };
 
 export default WInkEditor;
+
+// Lightweight suggestion dropdown component
+const MentionSuggestions: React.FC<{
+  editor: TiptapEditor;
+  getMentionSuggestions: (
+    query: string
+  ) => Array<string | { handle: string; label?: string; avatarUrl?: string }>;
+}> = ({ editor, getMentionSuggestions }) => {
+  const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
+  const [items, setItems] = React.useState<
+    Array<{ handle: string; label?: string; avatarUrl?: string }>
+  >([]);
+  const [coords, setCoords] = React.useState<{
+    left: number;
+    top: number;
+  } | null>(null);
+
+  React.useEffect(() => {
+    const view = editor.view;
+    const handler = () => {
+      const { state } = editor;
+      const { selection } = state;
+      const { $from } = selection;
+      const textBefore = $from.parent.textBetween(
+        0,
+        $from.parentOffset,
+        undefined,
+        "\uFFFC"
+      );
+      const match = /@([A-Za-z0-9_.-]*)$/.exec(textBefore);
+      const qRaw = match?.[1] ?? "";
+      if (!match || qRaw.length === 0) {
+        setOpen(false);
+        return;
+      }
+      const q = qRaw;
+      setQuery(q);
+      const rect = view.coordsAtPos($from.pos);
+      const containerRect = view.dom.getBoundingClientRect();
+      setCoords({
+        left: rect.left - containerRect.left - 8,
+        top: rect.bottom - containerRect.top + 22,
+      });
+      const raw = getMentionSuggestions(q) || [];
+      const norm = raw.map((v) => (typeof v === "string" ? { handle: v } : v));
+      setItems(norm.slice(0, 8));
+      setOpen(true);
+    };
+
+    view.dom.addEventListener("keyup", handler);
+    view.dom.addEventListener("click", handler);
+    return () => {
+      view.dom.removeEventListener("keyup", handler);
+      view.dom.removeEventListener("click", handler);
+    };
+  }, [editor, getMentionSuggestions]);
+
+  if (!open || !coords || items.length === 0) return null;
+
+  return (
+    <div
+      className="wink-dropdown-content"
+      style={{
+        position: "absolute",
+        left: coords.left,
+        top: coords.top,
+        zIndex: 50,
+      }}
+      onMouseDown={(e) => e.preventDefault()}
+    >
+      {items.map((item) => (
+        <div
+          key={item.handle}
+          className="wink-mention-suggestion"
+          onClick={() => {
+            // Replace current @query with selected handle
+            const { state } = editor;
+            const { selection } = state;
+            const { $from } = selection;
+            const textBefore = $from.parent.textBetween(
+              0,
+              $from.parentOffset,
+              undefined,
+              "\uFFFC"
+            );
+            const match = /@([A-Za-z0-9_.-]*)$/.exec(textBefore);
+            if (!match) return;
+            const from = $from.pos - match[0].length;
+            editor
+              .chain()
+              .focus()
+              .deleteRange({ from, to: $from.pos })
+              .insertContent(`@${item.handle} `)
+              .run();
+            setOpen(false);
+          }}
+        >
+          @{item.handle}
+        </div>
+      ))}
+    </div>
+  );
+};

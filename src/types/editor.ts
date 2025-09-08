@@ -115,6 +115,12 @@ export interface WInkEditorProps extends WInkEditorConfig {
   extensions?: any[];
   /** Callback for handling image uploads */
   onImageUpload?: (file: File) => Promise<string>;
+  /** Optional: handle clicks on mentions */
+  onMentionClick?: (handle: string) => void;
+  /** Optional: provide mention suggestions for a query; return list of handles or objects with label/handle */
+  getMentionSuggestions?: (
+    query: string
+  ) => Array<string | { handle: string; label?: string; avatarUrl?: string }>;
 }
 
 /**

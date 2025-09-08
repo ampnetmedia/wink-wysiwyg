@@ -58,6 +58,9 @@ export { sanitizeHtml } from "./utils/sanitize";
 export { exportContent, importContent } from "./utils/export";
 export { createPluginManager } from "./utils/plugins";
 
+// Extensions
+export { MentionHighlight } from "./extensions/MentionHighlight";
+
 // Styles
 import "./styles/wink.css";
 
