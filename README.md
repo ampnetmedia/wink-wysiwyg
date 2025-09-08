@@ -120,6 +120,7 @@ import { WInkEditor } from "@ampnet/wink-wysiwyg";
 | `maxHeight`             | `string \| number`                       | -                   | Maximum editor height               |
 | `onMentionClick`        | `(handle: string) => void`               | -                   | Callback when mention is clicked    |
 | `getMentionSuggestions` | `(query: string) => string[]`            | -                   | Function to get mention suggestions |
+| `onHashtagClick`        | `(tag: string) => void`                  | -                   | Callback when hashtag is clicked    |
 
 ### Hooks
 
@@ -335,7 +336,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 - ✅ **Phase 3**: Social Features (Partially Completed)
   - ✅ @mention system implementation with highlighting, click handlers, and suggestions
-  - 🚧 #hashtag system implementation
+  - ✅ #hashtag system implementation with highlighting and click handlers
   - 🚧 Integration APIs
 
 - ⏳ **Phase 4**: Extensibility (Planned)

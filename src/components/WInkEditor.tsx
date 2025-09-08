@@ -13,6 +13,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import { ImageExtension } from "../extensions/ImageExtension";
 import { MentionHighlight } from "../extensions/MentionHighlight";
+import { HashtagHighlight } from "../extensions/HashtagHighlight";
 import { WInkEditorProps, EditorState } from "../types/editor";
 import { useDragDrop } from "../hooks/useDragDrop";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
@@ -55,6 +56,7 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
   onImageUpload,
   onMentionClick,
   getMentionSuggestions,
+  onHashtagClick,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [editorState, setEditorState] = useState<EditorState>({
@@ -127,9 +129,28 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
       );
     }
 
+    if (enableHashtags) {
+      exts.push(
+        HashtagHighlight.configure({
+          HTMLAttributes: {
+            class: "wink-hashtag",
+            style:
+              "background:#F3E8FF;color:#7C3AED;border-radius:4px;padding:0 2px;border:1px solid #DDD6FE;",
+          },
+        })
+      );
+    }
+
     exts.push(...extensions);
     return exts;
-  }, [enableLinks, enableImages, enableMentions, placeholder, extensions]);
+  }, [
+    enableLinks,
+    enableImages,
+    enableMentions,
+    enableHashtags,
+    placeholder,
+    extensions,
+  ]);
 
   // Create the editor instance
   const editor = useEditor({
@@ -187,6 +208,41 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
                 from,
                 to,
                 type.create({ "data-mention": "true", "data-handle": match[1] })
+              );
+            }
+          }
+          if (tr.steps.length > 0) {
+            editor.view.dispatch(tr);
+          }
+        }
+      } catch (_) {}
+
+      // Lightweight #hashtag highlighter: scan current paragraph tokens and apply mark
+      try {
+        if (enableHashtags) {
+          const { state } = editor;
+          const { selection } = state;
+          const { $from } = selection;
+          const parent = $from.parent;
+          const startPos = $from.start();
+          const text = parent.textContent || "";
+          // Match #hashtag; allow dots inside, but not as the trailing char, and stop before punctuation
+          const regex = /#([A-Za-z0-9_.-]*[A-Za-z0-9_-])(?![A-Za-z0-9_-])/g;
+          let match: RegExpExecArray | null;
+          const tr = state.tr;
+          // Clear existing marks of this type in the paragraph to avoid duplicates
+          const type = (editor.schema.marks as any)["hashtagHighlight"];
+          if (type) {
+            tr.removeMark(startPos, startPos + text.length, type);
+          }
+          while ((match = regex.exec(text)) !== null) {
+            const from = startPos + match.index;
+            const to = from + match[0].length;
+            if (type) {
+              tr.addMark(
+                from,
+                to,
+                type.create({ "data-hashtag": "true", "data-tag": match[1] })
               );
             }
           }
@@ -362,14 +418,27 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
         className={`wink-editor-content ${getSizeClasses()} ${contentClassName}`}
         onClick={(e) => {
           const target = e.target as HTMLElement;
-          const el = target.closest(
+
+          // Check for mention clicks
+          const mentionEl = target.closest(
             '[data-mention="true"]'
           ) as HTMLElement | null;
-          if (el && onMentionClick) {
-            const handle = el.getAttribute("data-handle") || "";
+          if (mentionEl && onMentionClick) {
+            const handle = mentionEl.getAttribute("data-handle") || "";
             onMentionClick(handle);
             return;
           }
+
+          // Check for hashtag clicks
+          const hashtagEl = target.closest(
+            '[data-hashtag="true"]'
+          ) as HTMLElement | null;
+          if (hashtagEl && onHashtagClick) {
+            const tag = hashtagEl.getAttribute("data-tag") || "";
+            onHashtagClick(tag);
+            return;
+          }
+
           editor?.commands.focus();
         }}
       >

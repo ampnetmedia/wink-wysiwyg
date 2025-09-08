@@ -121,6 +121,8 @@ export interface WInkEditorProps extends WInkEditorConfig {
   getMentionSuggestions?: (
     query: string
   ) => Array<string | { handle: string; label?: string; avatarUrl?: string }>;
+  /** Optional: handle clicks on hashtags */
+  onHashtagClick?: (tag: string) => void;
 }
 
 /**

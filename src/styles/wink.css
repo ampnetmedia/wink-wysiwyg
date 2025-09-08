@@ -335,7 +335,8 @@
 
 /* Hashtag styles */
 .wink-hashtag {
-  @apply inline-flex items-center px-2 py-1 text-sm font-medium text-purple-700 bg-purple-100 border border-purple-200 rounded-md;
+  @apply inline px-1 py-0 text-sm font-medium text-purple-700 bg-purple-100 rounded cursor-pointer;
+  border: 1px solid #ddd6fe;
 }
 
 .wink-hashtag:hover {

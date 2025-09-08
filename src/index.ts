@@ -60,6 +60,7 @@ export { createPluginManager } from "./utils/plugins";
 
 // Extensions
 export { MentionHighlight } from "./extensions/MentionHighlight";
+export { HashtagHighlight } from "./extensions/HashtagHighlight";
 
 // Styles
 import "./styles/wink.css";
