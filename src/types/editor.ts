@@ -113,6 +113,8 @@ export interface WInkEditorProps extends WInkEditorConfig {
   plugins?: WInkPlugin[];
   /** Custom extensions to load */
   extensions?: any[];
+  /** Callback for handling image uploads */
+  onImageUpload?: (file: File) => Promise<string>;
 }
 
 /**

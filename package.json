@@ -17,7 +17,14 @@
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "type-check": "tsc --noEmit",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "version:prerelease": "npm version prerelease",
+    "release:patch": "npm run version:patch && npm run build && git push --follow-tags",
+    "release:minor": "npm run version:minor && npm run build && git push --follow-tags",
+    "release:major": "npm run version:major && npm run build && git push --follow-tags"
   },
   "keywords": [
     "wysiwyg",
@@ -40,21 +47,12 @@
     "url": "https://github.com/ampnet-media/wink-wysiwyg/issues"
   },
   "homepage": "https://github.com/ampnet-media/wink-wysiwyg#readme",
-  "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
-  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-typescript": "^12.1.4",
-    "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4.1.13",
-    "@tailwindcss/typography": "^0.5.16",
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",

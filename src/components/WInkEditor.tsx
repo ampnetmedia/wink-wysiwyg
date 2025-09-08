@@ -3,11 +3,14 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
+import { ImageExtension } from "../extensions/ImageExtension";
 import { WInkEditorProps, EditorState } from "../types/editor";
-import { useWInkEditor } from "../hooks/useWInkEditor";
+import { useDragDrop } from "../hooks/useDragDrop";
+import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
+import { useFocusManagement } from "../hooks/useFocusManagement";
+import { useCopyPaste } from "../hooks/useCopyPaste";
 import Toolbar from "./Toolbar";
 
 /**
@@ -41,6 +44,7 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
   enableCodeBlocks = true,
   plugins = [],
   extensions = [],
+  onImageUpload,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [editorState, setEditorState] = useState<EditorState>({
@@ -91,7 +95,7 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
 
   if (enableImages) {
     tipTapExtensions.push(
-      Image.configure({
+      ImageExtension.configure({
         HTMLAttributes: {
           class: "wink-image",
         },
@@ -166,6 +170,41 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
     onDestroy: () => {
       onDestroy?.();
     },
+  });
+
+  // Set up drag and drop functionality after editor is created
+  useDragDrop({
+    editor,
+    onImageUpload,
+    enabled: enableImages,
+  });
+
+  // Set up keyboard shortcuts
+  useKeyboardShortcuts({
+    editor,
+    enabled: true,
+  });
+
+  // Set up focus management
+  useFocusManagement({
+    editor,
+    autoFocus,
+    onFocus: () => {
+      setEditorState((prev) => ({ ...prev, isFocused: true }));
+    },
+    onBlur: () => {
+      setEditorState((prev) => ({ ...prev, isFocused: false }));
+    },
+    enabled: true,
+  });
+
+  // Set up copy/paste handling
+  useCopyPaste({
+    editor,
+    onImageUpload,
+    enabled: true,
+    preserveFormatting: true,
+    sanitizeContent: true,
   });
 
   // Handle content changes from props
@@ -255,11 +294,13 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
           enableLinks={enableLinks}
           enableTables={enableTables}
           enableCodeBlocks={enableCodeBlocks}
+          onImageUpload={onImageUpload}
         />
       )}
 
       <div
         className={`wink-editor-content ${getSizeClasses()} ${contentClassName}`}
+        onClick={() => editor?.commands.focus()}
       >
         <EditorContent editor={editor} />
       </div>

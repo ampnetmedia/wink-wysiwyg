@@ -86,7 +86,7 @@ export const sanitizeHtml = (
     ...options,
   };
 
-  return DOMPurify.sanitize(html, sanitizeOptions as any) as string;
+  return DOMPurify.sanitize(html, sanitizeOptions as any) as unknown as string;
 };
 
 /**

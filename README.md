@@ -311,12 +311,22 @@ MIT License - see [LICENSE](LICENSE) file for details.
   - Plugin architecture foundation
   - Type definitions and hooks
 
-- 🚧 **Phase 2**: Core Features (In Progress)
-  - Advanced formatting features
-  - Media support (images, videos)
-  - Editor enhancements (undo/redo, keyboard shortcuts)
+- ✅ **Phase 2**: Core Features (Completed)
+  - Advanced formatting features (bold, italic, underline, strikethrough)
+  - Text alignment (left, center, right, justify)
+  - Headings (H1-H6) with dropdown selector
+  - Lists (bullet and numbered) with proper styling
+  - Blockquotes and code blocks
+  - Link insertion and management
+  - Image support with drag & drop
+  - Undo/redo functionality
+  - Comprehensive keyboard shortcuts
+  - Enhanced copy/paste with Word/Google Docs support
+  - Smart focus management and navigation
+  - Animated toolbar buttons with hover effects
+  - Light theme with proper CSS isolation
 
-- ⏳ **Phase 3**: Social Features (Planned)
+- 🚧 **Phase 3**: Social Features (In Progress)
   - @mention system implementation
   - #hashtag system implementation
   - Integration APIs
@@ -331,14 +341,66 @@ MIT License - see [LICENSE](LICENSE) file for details.
   - API documentation
   - Package preparation
 
+## Version Management
+
+This project uses semantic versioning (semver) for version management. Use the following npm scripts to manage versions:
+
+### Version Commands
+
+```bash
+# Patch version (0.1.0 -> 0.1.1) - Bug fixes
+npm run version:patch
+
+# Minor version (0.1.0 -> 0.2.0) - New features, backward compatible
+npm run version:minor
+
+# Major version (0.1.0 -> 1.0.0) - Breaking changes
+npm run version:major
+
+# Prerelease version (0.1.0 -> 0.1.1-0) - Alpha/beta releases
+npm run version:prerelease
+```
+
+### Release Commands
+
+```bash
+# Release with automatic build and git push
+npm run release:patch   # For bug fixes
+npm run release:minor   # For new features
+npm run release:major   # For breaking changes
+```
+
+### Manual Version Management
+
+```bash
+# Set a specific version
+npm version 0.2.0
+
+# Set a prerelease version
+npm version 0.2.0-beta.1
+```
+
 ## Changelog
 
 ### 0.1.0
 
-- Initial release
-- Basic WYSIWYG functionality
-- @mention and #hashtag support hooks
+- Initial release with comprehensive WYSIWYG functionality
+- Core editor with TipTap integration
+- Complete toolbar with animated buttons
+- Text formatting (bold, italic, underline, strikethrough)
+- Text alignment (left, center, right, justify)
+- Headings (H1-H6) with dropdown selector
+- Lists (bullet and numbered) with proper styling
+- Blockquotes and code blocks
+- Link insertion and management
+- Image support with drag & drop
+- Undo/redo functionality
+- Comprehensive keyboard shortcuts modal
+- Enhanced copy/paste with Word/Google Docs support
+- Smart focus management and navigation
+- Light theme with proper CSS isolation
 - Plugin system architecture
+- @mention and #hashtag support hooks (ready for implementation)
 - TailwindCSS integration
 - Accessibility features
 - TypeScript support

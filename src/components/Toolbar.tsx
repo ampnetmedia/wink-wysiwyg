@@ -10,7 +10,6 @@ import {
   Quote,
   Code,
   Link,
-  Image,
   AlignLeft,
   AlignCenter,
   AlignRight,
@@ -18,6 +17,8 @@ import {
   Undo,
   Redo,
 } from "lucide-react";
+import ImagePlugin from "./plugins/ImagePlugin";
+import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 
 interface ToolbarProps {
   editor: Editor;
@@ -28,6 +29,7 @@ interface ToolbarProps {
   enableLinks?: boolean;
   enableTables?: boolean;
   enableCodeBlocks?: boolean;
+  onImageUpload?: (file: File) => Promise<string>;
 }
 
 /**
@@ -45,6 +47,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   enableLinks = true,
   enableTables = false,
   enableCodeBlocks = true,
+  onImageUpload,
 }) => {
   if (!editor) {
     return null;
@@ -59,9 +62,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
   }> = ({ onClick, isActive = false, disabled = false, icon, tooltip }) => (
     <button
       type="button"
+      onMouseDown={(e) => {
+        // Keep focus and selection on the editor so commands apply immediately
+        e.preventDefault();
+      }}
       onClick={onClick}
       disabled={disabled}
-      className={`wink-button ${isActive ? "active" : ""}`}
+      className={`wink-button cursor-pointer ${isActive ? "active" : ""}`}
       title={tooltip}
       aria-label={tooltip}
     >
@@ -108,7 +115,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       {/* Headings */}
       <div className="wink-toolbar-group">
         <select
-          className="wink-button"
+          className="wink-button wink-select"
           onChange={(e) => {
             const level = parseInt(e.target.value);
             if (level === 0) {
@@ -220,16 +227,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         )}
 
         {enableImages && (
-          <ToolbarButton
-            onClick={() => {
-              const url = window.prompt("Enter image URL:");
-              if (url) {
-                editor.chain().focus().setImage({ src: url }).run();
-              }
-            }}
-            icon={<Image size={16} />}
-            tooltip="Add Image"
-          />
+          <ImagePlugin editor={editor} onImageUpload={onImageUpload} />
         )}
       </div>
 
@@ -263,6 +261,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
           icon={<Redo size={16} />}
           tooltip="Redo (Ctrl+Y)"
         />
+      </div>
+
+      <ToolbarSeparator />
+
+      {/* Help */}
+      <div className="wink-toolbar-group">
+        <KeyboardShortcutsHelp />
       </div>
     </div>
   );

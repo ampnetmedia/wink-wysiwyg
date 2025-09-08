@@ -1,5 +1,6 @@
 import { Editor } from "@tiptap/react";
 import { ExportConfig, ImportConfig } from "../types/editor";
+import { sanitizeHtml } from "./sanitize";
 
 /**
  * Export editor content in various formats
@@ -196,8 +197,6 @@ const importFromHtml = (
   let html = content;
 
   if (options.sanitize) {
-    // Import sanitize function
-    const { sanitizeHtml } = require("./sanitize");
     html = sanitizeHtml(html);
   }
 
@@ -233,7 +232,6 @@ const importFromMarkdown = (
     .replace(/\n/gim, "<br>");
 
   if (options.sanitize) {
-    const { sanitizeHtml } = require("./sanitize");
     html = sanitizeHtml(html);
   }
 

@@ -1,34 +1,176 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* W-Ink WYSIWYG Editor Styles */
 
+/* Custom CSS variables for theming */
+@theme {
+  --color-wink-50: #f0f9ff;
+  --color-wink-100: #e0f2fe;
+  --color-wink-200: #bae6fd;
+  --color-wink-300: #7dd3fc;
+  --color-wink-400: #38bdf8;
+  --color-wink-500: #0ea5e9;
+  --color-wink-600: #0284c7;
+  --color-wink-700: #0369a1;
+  --color-wink-800: #075985;
+  --color-wink-900: #0c4a6e;
+
+  --color-editor-bg: #ffffff;
+  --color-editor-border: #e5e7eb;
+  --color-editor-text: #111827;
+  --color-editor-muted: #6b7280;
+  --color-editor-accent: #3b82f6;
+
+  --color-mention-bg: #dbeafe;
+  --color-mention-text: #1e40af;
+  --color-mention-border: #93c5fd;
+
+  --color-hashtag-bg: #f3e8ff;
+  --color-hashtag-text: #7c3aed;
+  --color-hashtag-border: #c4b5fd;
+
+  --font-family-sans: Inter, system-ui, sans-serif;
+  --font-family-mono: "JetBrains Mono", Consolas, monospace;
+
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+
+  --shadow-editor:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-editor-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  --animate-fade-in: fadeIn 0.2s ease-in-out;
+  --animate-slide-up: slideUp 0.2s ease-out;
+  --animate-pulse-slow: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Base editor styles */
 .wink-editor {
-  @apply relative bg-white border border-gray-200 rounded-lg shadow-editor;
+  @apply relative bg-white border border-gray-200 rounded-lg;
+  box-shadow: var(--shadow-editor);
 }
 
 .wink-editor:focus-within {
-  @apply border-blue-500 shadow-editor-lg;
+  @apply border-blue-500;
+  box-shadow: var(--shadow-editor-lg);
 }
 
 /* Editor content area */
 .wink-editor-content {
   @apply min-h-[120px] p-4 focus:outline-none;
+  position: relative;
 }
 
-.wink-editor-content.ProseMirror {
-  @apply prose prose-sm max-w-none;
+.wink-editor-content .ProseMirror {
+  @apply max-w-none;
+  /* Typography styles for editor content */
+  line-height: 1.6;
+  color: var(--color-editor-text);
+  min-height: inherit;
 }
 
-.wink-editor-content.ProseMirror:focus {
+.wink-editor-content .ProseMirror h1 {
+  @apply text-2xl font-bold mb-4 mt-6;
+}
+
+.wink-editor-content .ProseMirror h2 {
+  @apply text-xl font-bold mb-3 mt-5;
+}
+
+.wink-editor-content .ProseMirror h3 {
+  @apply text-lg font-bold mb-2 mt-4;
+}
+
+.wink-editor-content .ProseMirror h4 {
+  @apply text-base font-bold mb-2 mt-3;
+}
+
+.wink-editor-content .ProseMirror h5 {
+  @apply text-sm font-bold mb-1 mt-2;
+}
+
+.wink-editor-content .ProseMirror h6 {
+  @apply text-xs font-bold mb-1 mt-2;
+}
+
+.wink-editor-content .ProseMirror p {
+  @apply mb-3;
+}
+
+.wink-editor-content .ProseMirror ul {
+  @apply list-disc mb-3 pl-5;
+  list-style-position: outside;
+}
+
+.wink-editor-content .ProseMirror ol {
+  @apply list-decimal mb-3 pl-5;
+  list-style-position: outside;
+}
+
+.wink-editor-content .ProseMirror li {
+  @apply mb-1;
+}
+
+/* Prevent paragraph inside list item from breaking line height/marker alignment */
+.wink-editor-content .ProseMirror li > p {
+  margin: 0;
+  display: inline;
+}
+
+/* Ensure additional paragraphs in the same li are spaced properly */
+.wink-editor-content .ProseMirror li > p + p {
+  display: block;
+  @apply mt-2;
+}
+
+.wink-editor-content .ProseMirror blockquote {
+  @apply border-l-4 border-gray-300 pl-4 italic mb-3;
+}
+
+.wink-editor-content .ProseMirror code {
+  @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono;
+}
+
+.wink-editor-content .ProseMirror pre {
+  @apply bg-gray-100 p-3 rounded mb-3 overflow-x-auto;
+}
+
+.wink-editor-content .ProseMirror pre code {
+  @apply bg-transparent p-0;
+}
+
+.wink-editor-content .ProseMirror:focus {
   @apply outline-none;
 }
 
 /* Toolbar styles */
 .wink-toolbar {
-  @apply flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg;
+  @apply flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg whitespace-nowrap overflow-x-auto;
 }
 
 .wink-toolbar-group {
@@ -41,19 +183,120 @@
 
 /* Button styles */
 .wink-button {
-  @apply inline-flex items-center justify-center w-8 h-8 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200;
+  @apply inline-flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-700 bg-white border-0 rounded-[28%] shadow-lg hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden;
+  transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+  box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Select dropdown styles */
+.wink-select {
+  @apply min-w-[140px] px-3 py-1 text-sm;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 6px !important;
+  background-color: white !important;
+  border: 1px solid #d1d5db !important;
+  color: #374151 !important;
+}
+
+.wink-select:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-1;
+  border-color: #3b82f6 !important;
+}
+
+/* Button with text styles */
+.wink-button-text {
+  @apply min-w-[100px] px-3 py-2 text-sm font-medium text-gray-700 bg-white border-0 rounded-[28%] shadow-lg hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden;
+  transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+  box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.1);
+  height: auto !important;
+  width: auto !important;
+}
+
+.wink-button-text::before {
+  content: "";
+  position: absolute;
+  top: 90%;
+  left: -110%;
+  width: 120%;
+  height: 120%;
+  background-color: #3b82f6;
+  transform: rotate(45deg);
+  transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+  z-index: 0;
+}
+
+.wink-button-text svg,
+.wink-button-text span {
+  transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+  transform: scale(0.8);
+  position: relative;
+  z-index: 1;
+}
+
+.wink-button-text:hover:not(:disabled) {
+  @apply text-white;
+}
+
+.wink-button-text:hover:not(:disabled)::before {
+  top: -10%;
+  left: -10%;
+}
+
+.wink-button-text:hover:not(:disabled) svg,
+.wink-button-text:hover:not(:disabled) span {
+  transform: scale(1);
+}
+
+.wink-button::before {
+  content: "";
+  position: absolute;
+  top: 90%;
+  left: -110%;
+  width: 120%;
+  height: 120%;
+  background-color: #3b82f6;
+  transform: rotate(45deg);
+  transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+  z-index: 0;
+}
+
+.wink-button svg {
+  transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+  transform: scale(0.8);
+  position: relative;
+  z-index: 1;
 }
 
 .wink-button.active {
-  @apply bg-blue-100 text-blue-700 border-blue-300;
+  @apply text-white;
+}
+
+.wink-button.active::before {
+  background-color: #1d4ed8;
+  top: -10%;
+  left: -10%;
+}
+
+.wink-button.active svg {
+  transform: scale(1);
 }
 
 .wink-button:hover:not(:disabled) {
-  @apply bg-gray-100;
+  @apply text-white;
+}
+
+.wink-button:hover:not(:disabled)::before {
+  top: -10%;
+  left: -10%;
+}
+
+.wink-button:hover:not(:disabled) svg {
+  transform: scale(1);
 }
 
 .wink-button:active:not(:disabled) {
-  @apply bg-gray-200;
+  transform: scale(0.95);
 }
 
 /* Dropdown styles */
@@ -93,7 +336,7 @@
 
 /* Image styles */
 .wink-image {
-  @apply max-w-full h-auto rounded-lg shadow-sm;
+  @apply max-w-full h-auto rounded-lg shadow-sm transition-all duration-200;
 }
 
 .wink-image-wrapper {
@@ -102,6 +345,204 @@
 
 .wink-image-wrapper.selected {
   @apply ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Image alignment */
+.wink-image-align-left {
+  @apply float-left mr-4 mb-2;
+}
+
+.wink-image-align-center {
+  @apply block mx-auto mb-4;
+}
+
+.wink-image-align-right {
+  @apply float-right ml-4 mb-2;
+}
+
+/* Image container and controls */
+.wink-image-container {
+  @apply relative inline-block;
+}
+
+.wink-image-controls {
+  @apply absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity duration-200;
+}
+
+.wink-image-wrapper:hover .wink-image-controls,
+.wink-image-wrapper.selected .wink-image-controls {
+  @apply opacity-100;
+}
+
+.wink-control-group {
+  @apply flex gap-1;
+}
+
+.wink-control-button {
+  @apply flex items-center justify-center w-6 h-6 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 hover:border-gray-400 transition-colors duration-150;
+}
+
+.wink-control-button.active {
+  @apply bg-blue-100 border-blue-300 text-blue-700;
+}
+
+.wink-control-button-danger {
+  @apply hover:bg-red-50 hover:border-red-300 hover:text-red-700;
+}
+
+/* Resize handle */
+.wink-resize-handle {
+  @apply absolute bottom-0 right-0 w-4 h-4 bg-blue-500 text-white rounded-tl-lg cursor-se-resize flex items-center justify-center opacity-0 transition-opacity duration-200;
+}
+
+.wink-image-wrapper:hover .wink-resize-handle {
+  @apply opacity-100;
+}
+
+/* Drag handle */
+.wink-drag-handle {
+  @apply absolute top-0 left-0 w-4 h-4 bg-gray-500 text-white rounded-br-lg cursor-move flex items-center justify-center opacity-0 transition-opacity duration-200;
+}
+
+.wink-image-wrapper:hover .wink-drag-handle {
+  @apply opacity-100;
+}
+
+/* Modal styles */
+.wink-modal-overlay {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+}
+
+.wink-modal {
+  @apply bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto;
+}
+
+.wink-modal-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-200;
+}
+
+.wink-modal-header h3 {
+  @apply text-lg font-semibold text-gray-900;
+}
+
+.wink-modal-close {
+  @apply p-1 text-gray-400 hover:text-gray-600 transition-colors duration-150;
+}
+
+.wink-modal-content {
+  @apply p-4 space-y-4;
+}
+
+.wink-modal-actions {
+  @apply flex justify-end gap-2 pt-4 border-t border-gray-200;
+}
+
+/* Form styles */
+.wink-form-group {
+  @apply space-y-2;
+}
+
+.wink-form-label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.wink-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+.wink-upload-area {
+  @apply border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors duration-150;
+}
+
+.wink-file-input {
+  @apply hidden;
+}
+
+.wink-upload-button {
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-150;
+}
+
+.wink-align-buttons {
+  @apply flex gap-1;
+}
+
+.wink-align-button {
+  @apply flex items-center justify-center w-8 h-8 border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-150;
+}
+
+.wink-align-button.active {
+  @apply bg-blue-100 border-blue-300 text-blue-700;
+}
+
+/* Button styles */
+.wink-button {
+  @apply inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 cursor-pointer;
+}
+
+.wink-button-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.wink-button-secondary {
+  @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
+}
+
+/* Keyboard shortcuts help styles */
+.wink-shortcuts-modal {
+  @apply bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto;
+}
+
+.wink-shortcuts-content {
+  @apply p-6;
+}
+
+.wink-shortcuts-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.wink-shortcut-group {
+  @apply space-y-3;
+}
+
+.wink-shortcut-group-title {
+  @apply text-sm font-semibold text-gray-900 border-b border-gray-200 pb-2;
+}
+
+.wink-shortcut-list {
+  @apply space-y-2;
+}
+
+.wink-shortcut-item {
+  @apply flex items-center justify-between gap-4;
+}
+
+.wink-shortcut-key {
+  @apply inline-flex items-center px-2 py-1 text-xs font-mono bg-gray-100 text-gray-800 border border-gray-300 rounded shadow-sm;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo,
+    monospace;
+}
+
+.wink-shortcut-description {
+  @apply text-sm text-gray-700 flex-1;
+}
+
+.wink-shortcuts-footer {
+  @apply mt-6 pt-4 border-t border-gray-200;
+}
+
+.wink-shortcuts-note {
+  @apply flex items-center gap-2 text-xs text-gray-500;
+}
+
+/* Drag and drop styles */
+.wink-drag-over {
+  @apply ring-2 ring-blue-500 ring-offset-2 bg-blue-50;
+}
+
+.wink-drag-over::after {
+  content: "Drop images here";
+  @apply absolute inset-0 flex items-center justify-center text-blue-600 font-medium bg-blue-50/90 pointer-events-none;
 }
 
 /* Placeholder styles */
@@ -125,7 +566,7 @@
 /* Responsive design */
 @media (max-width: 640px) {
   .wink-toolbar {
-    @apply flex-wrap gap-1;
+    @apply flex-nowrap gap-1;
   }
 
   .wink-toolbar-group {
@@ -133,49 +574,11 @@
   }
 
   .wink-button {
-    @apply w-7 h-7 text-xs;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .wink-editor {
-    @apply bg-gray-900 border-gray-700;
-  }
-
-  .wink-editor-content {
-    @apply text-gray-100;
-  }
-
-  .wink-toolbar {
-    @apply bg-gray-800 border-gray-700;
-  }
-
-  .wink-button {
-    @apply text-gray-300 bg-gray-800 border-gray-600 hover:bg-gray-700 hover:text-gray-100;
-  }
-
-  .wink-button.active {
-    @apply bg-blue-900 text-blue-300 border-blue-700;
-  }
-
-  .wink-dropdown-content {
-    @apply bg-gray-800 border-gray-700;
-  }
-
-  .wink-dropdown-item {
-    @apply text-gray-300 hover:bg-gray-700 hover:text-gray-100;
-  }
-
-  .wink-placeholder {
-    @apply text-gray-500;
+    @apply w-8 h-8 text-xs;
   }
 }
 
 /* Accessibility improvements */
-.wink-editor:focus-within {
-  @apply ring-2 ring-blue-500 ring-offset-2;
-}
 
 .wink-button:focus {
   @apply ring-2 ring-blue-500 ring-offset-1;
@@ -196,11 +599,11 @@
 
 /* Animation for smooth transitions */
 .wink-fade-in {
-  @apply animate-fade-in;
+  animation: var(--animate-fade-in);
 }
 
 .wink-slide-up {
-  @apply animate-slide-up;
+  animation: var(--animate-slide-up);
 }
 
 /* Print styles */
