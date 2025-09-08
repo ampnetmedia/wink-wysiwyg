@@ -72,7 +72,9 @@ import { WInkEditor } from "@ampnet/wink-wysiwyg";
   onMentionClick={(handle) => console.log("Mention clicked:", handle)}
   getMentionSuggestions={(query) => {
     // Return filtered suggestions based on query
-    return suggestions.filter(s => s.toLowerCase().includes(query.toLowerCase()));
+    return suggestions.filter((s) =>
+      s.toLowerCase().includes(query.toLowerCase())
+    );
   }}
 />
 ```
@@ -99,25 +101,25 @@ import { WInkEditor } from "@ampnet/wink-wysiwyg";
 
 ### WInkEditor Props
 
-| Prop               | Type                                     | Default             | Description                   |
-| ------------------ | ---------------------------------------- | ------------------- | ----------------------------- |
-| `content`          | `string`                                 | `''`                | Initial HTML content          |
-| `onChange`         | `(content: string) => void`              | -                   | Callback when content changes |
-| `placeholder`      | `string`                                 | `'Start typing...'` | Placeholder text              |
-| `editable`         | `boolean`                                | `true`              | Whether editor is editable    |
-| `showToolbar`      | `boolean`                                | `true`              | Whether to show toolbar       |
-| `size`             | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `'md'`              | Editor size                   |
-| `theme`            | `'light' \| 'dark' \| 'auto'`            | `'light'`           | Editor theme                  |
-| `enableMentions`   | `boolean`                                | `false`             | Enable @mention support       |
-| `enableHashtags`   | `boolean`                                | `false`             | Enable #hashtag support       |
-| `enableImages`     | `boolean`                                | `true`              | Enable image insertion        |
-| `enableLinks`      | `boolean`                                | `true`              | Enable link insertion         |
-| `enableCodeBlocks` | `boolean`                                | `true`              | Enable code blocks            |
-| `autoFocus`        | `boolean`                                | `false`             | Auto-focus on mount           |
-| `minHeight`        | `string \| number`                       | `'120px'`           | Minimum editor height         |
-| `maxHeight`        | `string \| number`                       | -                   | Maximum editor height         |
-| `onMentionClick`   | `(handle: string) => void`               | -                   | Callback when mention is clicked |
-| `getMentionSuggestions` | `(query: string) => string[]`        | -                   | Function to get mention suggestions |
+| Prop                    | Type                                     | Default             | Description                         |
+| ----------------------- | ---------------------------------------- | ------------------- | ----------------------------------- |
+| `content`               | `string`                                 | `''`                | Initial HTML content                |
+| `onChange`              | `(content: string) => void`              | -                   | Callback when content changes       |
+| `placeholder`           | `string`                                 | `'Start typing...'` | Placeholder text                    |
+| `editable`              | `boolean`                                | `true`              | Whether editor is editable          |
+| `showToolbar`           | `boolean`                                | `true`              | Whether to show toolbar             |
+| `size`                  | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `'md'`              | Editor size                         |
+| `theme`                 | `'light' \| 'dark' \| 'auto'`            | `'light'`           | Editor theme                        |
+| `enableMentions`        | `boolean`                                | `false`             | Enable @mention support             |
+| `enableHashtags`        | `boolean`                                | `false`             | Enable #hashtag support             |
+| `enableImages`          | `boolean`                                | `true`              | Enable image insertion              |
+| `enableLinks`           | `boolean`                                | `true`              | Enable link insertion               |
+| `enableCodeBlocks`      | `boolean`                                | `true`              | Enable code blocks                  |
+| `autoFocus`             | `boolean`                                | `false`             | Auto-focus on mount                 |
+| `minHeight`             | `string \| number`                       | `'120px'`           | Minimum editor height               |
+| `maxHeight`             | `string \| number`                       | -                   | Maximum editor height               |
+| `onMentionClick`        | `(handle: string) => void`               | -                   | Callback when mention is clicked    |
+| `getMentionSuggestions` | `(query: string) => string[]`            | -                   | Function to get mention suggestions |
 
 ### Hooks
 
