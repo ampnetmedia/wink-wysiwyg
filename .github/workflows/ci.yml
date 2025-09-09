@@ -33,7 +33,7 @@ jobs:
         run: npm run type-check
 
       - name: Run tests
-        run: npm test
+        run: npm test -- --run --reporter=verbose
 
       - name: Build package
         run: npm run build
@@ -76,7 +76,7 @@ jobs:
         run: npm run type-check
 
       - name: Run tests
-        run: npm test
+        run: npm test -- --run --reporter=verbose
 
       - name: Build package
         run: npm run build
