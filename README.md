@@ -207,12 +207,14 @@ The `primaryColor` prop allows you to set a custom color that automatically gene
 ```
 
 **What gets themed:**
+
 - **Toolbar buttons**: Hover and active states use the primary color
 - **@mentions**: Background, text, and border colors use primary color variations
 - **#hashtags**: Background, text, and border colors use primary color variations
 - **Interactive elements**: All hover effects respect the primary color theme
 
 **Color variations generated:**
+
 - Light variations (10% opacity) for backgrounds
 - Medium variations (30% opacity) for borders
 - Dark variations (80% opacity) for hover states
