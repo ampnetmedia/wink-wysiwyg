@@ -1,5 +1,7 @@
 # W-Ink WYSIWYG Editor
 
+v0.2.3
+
 A modern, extensible WYSIWYG editor for React applications with @mentions and #hashtags support.
 
 [![npm version](https://badge.fury.io/js/%40ampnet%2Fwink-wysiwyg.svg)](https://badge.fury.io/js/%40ampnet%2Fwink-wysiwyg)

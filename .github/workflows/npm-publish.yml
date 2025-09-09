@@ -10,6 +10,7 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
+  packages: write
 
 jobs:
   publish:
@@ -57,9 +58,19 @@ jobs:
             echo "should-publish=true" >> $GITHUB_OUTPUT
           fi
 
+      - name: Verify NPM Authentication
+        if: steps.version-check.outputs.should-publish == 'true'
+        run: |
+          echo "Verifying NPM authentication..."
+          npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish to NPM
         if: steps.version-check.outputs.should-publish == 'true'
-        run: npm publish --access public
+        run: |
+          echo "Publishing to npm..."
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
