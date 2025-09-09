@@ -1,0 +1,94 @@
+name: NPM Publish
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    # Only run on pushes to main (not PRs)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper version detection
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build package
+        run: npm run build
+
+      - name: Check if version needs to be bumped
+        id: version-check
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+          # Check if this version exists on npm
+          if npm view @ampnet/wink-wysiwyg@$CURRENT_VERSION version >/dev/null 2>&1; then
+            echo "Version $CURRENT_VERSION already exists on npm"
+            echo "should-publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Version $CURRENT_VERSION is new, will publish"
+            echo "should-publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish to NPM
+        if: steps.version-check.outputs.should-publish == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.version-check.outputs.should-publish == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version-check.outputs.current-version }}
+          release_name: Release v${{ steps.version-check.outputs.current-version }}
+          body: |
+            ## What's New in v${{ steps.version-check.outputs.current-version }}
+
+            ### Installation
+            ```bash
+            npm install @ampnet/wink-wysiwyg@${{ steps.version-check.outputs.current-version }}
+            ```
+
+            ### Usage
+            ```tsx
+            import { WInkEditor } from "@ampnet/wink-wysiwyg";
+            import "@ampnet/wink-wysiwyg/dist/styles.css";
+
+            <WInkEditor
+              content={content}
+              onChange={setContent}
+              enableMentions={true}
+              enableHashtags={true}
+            />
+            ```
+
+            ### Package Details
+            - **NPM**: https://www.npmjs.com/package/@ampnet/wink-wysiwyg
+            - **Documentation**: https://github.com/ampnet-media/wink-wysiwyg#readme
+          draft: false
+          prerelease: false
