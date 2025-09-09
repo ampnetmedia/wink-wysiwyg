@@ -95,6 +95,8 @@ export interface WInkEditorProps extends WInkEditorConfig {
   theme?: EditorTheme;
   /** Mode of the editor */
   mode?: EditorMode;
+  /** Primary color for theming (hex color code) */
+  primaryColor?: string;
   /** Custom toolbar configuration */
   toolbar?: ToolbarGroup[];
   /** Whether to enable mentions */
@@ -115,6 +117,14 @@ export interface WInkEditorProps extends WInkEditorConfig {
   extensions?: any[];
   /** Callback for handling image uploads */
   onImageUpload?: (file: File) => Promise<string>;
+  /** Optional: handle clicks on mentions */
+  onMentionClick?: (handle: string) => void;
+  /** Optional: provide mention suggestions for a query; return list of handles or objects with label/handle */
+  getMentionSuggestions?: (
+    query: string
+  ) => Array<string | { handle: string; label?: string; avatarUrl?: string }>;
+  /** Optional: handle clicks on hashtags */
+  onHashtagClick?: (tag: string) => void;
 }
 
 /**

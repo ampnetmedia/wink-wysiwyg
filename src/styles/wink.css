@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* ProseMirror base styles - required for proper rendering */
+.ProseMirror {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  outline: none;
+}
+
 /* W-Ink WYSIWYG Editor Styles */
 
 /* Custom CSS variables for theming */
@@ -21,13 +28,20 @@
   --color-editor-muted: #6b7280;
   --color-editor-accent: #3b82f6;
 
-  --color-mention-bg: #dbeafe;
-  --color-mention-text: #1e40af;
-  --color-mention-border: #93c5fd;
+  /* Primary color variables - can be overridden by component */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-primary-dark: #1d4ed8;
 
-  --color-hashtag-bg: #f3e8ff;
-  --color-hashtag-text: #7c3aed;
-  --color-hashtag-border: #c4b5fd;
+  /* Mention and hashtag colors - use primary color variations */
+  --color-mention-bg: var(--color-primary-light);
+  --color-mention-text: var(--color-primary-dark);
+  --color-mention-border: var(--color-primary);
+
+  --color-hashtag-bg: var(--color-primary-light);
+  --color-hashtag-text: var(--color-primary-dark);
+  --color-hashtag-border: var(--color-primary);
 
   --font-family-sans: Inter, system-ui, sans-serif;
   --font-family-mono: "JetBrains Mono", Consolas, monospace;
@@ -220,7 +234,7 @@
   left: -110%;
   width: 120%;
   height: 120%;
-  background-color: #3b82f6;
+  background-color: var(--color-primary);
   transform: rotate(45deg);
   transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
   z-index: 0;
@@ -255,7 +269,7 @@
   left: -110%;
   width: 120%;
   height: 120%;
-  background-color: #3b82f6;
+  background-color: var(--color-primary);
   transform: rotate(45deg);
   transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
   z-index: 0;
@@ -273,7 +287,7 @@
 }
 
 .wink-button.active::before {
-  background-color: #1d4ed8;
+  background-color: var(--color-primary-hover);
   top: -10%;
   left: -10%;
 }
@@ -314,7 +328,10 @@
 
 /* Mention styles */
 .wink-mention {
-  @apply inline-flex items-center px-2 py-1 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-200 rounded-md;
+  @apply inline px-1 py-0 text-sm font-medium rounded cursor-pointer;
+  color: var(--color-mention-text);
+  background-color: var(--color-mention-bg);
+  border: 1px solid var(--color-mention-border);
 }
 
 .wink-mention-suggestion {
@@ -327,11 +344,15 @@
 
 /* Hashtag styles */
 .wink-hashtag {
-  @apply inline-flex items-center px-2 py-1 text-sm font-medium text-purple-700 bg-purple-100 border border-purple-200 rounded-md;
+  @apply inline px-1 py-0 text-sm font-medium rounded cursor-pointer;
+  color: var(--color-hashtag-text);
+  background-color: var(--color-hashtag-bg);
+  border: 1px solid var(--color-hashtag-border);
 }
 
 .wink-hashtag:hover {
-  @apply bg-purple-200;
+  background-color: var(--color-primary);
+  color: white;
 }
 
 /* Image styles */
