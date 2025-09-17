@@ -44,6 +44,8 @@ export default [
         declaration: true,
         declarationDir: "./dist",
         exclude: ["**/*.test.*", "**/*.spec.*"],
+        declarationMap: true,
+        emitDeclarationOnly: false,
       }),
       postcss({
         extract: true,
