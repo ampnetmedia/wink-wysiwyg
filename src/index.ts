@@ -3,6 +3,8 @@
 // Core components
 export { default as WInkEditor } from "./components/WInkEditor";
 export { default as Toolbar } from "./components/Toolbar";
+export { default as WInkNoSSR } from "./components/WInkNoSSR";
+export { default as WInkRenderer } from "./components/WInkRenderer";
 
 // Hooks
 export { useWInkEditor } from "./hooks/useWInkEditor";
