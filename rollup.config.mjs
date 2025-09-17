@@ -102,4 +102,50 @@ export default [
       }),
     ],
   },
+  // Client entry build (ESM)
+  {
+    input: "src/client.ts",
+    output: {
+      file: "dist/client.js",
+      format: "esm",
+      sourcemap: true,
+    },
+    external: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@tiptap/react",
+      "@tiptap/starter-kit",
+      "@tiptap/extension-underline",
+      "@tiptap/extension-link",
+      "@tiptap/extension-image",
+      "@tiptap/extension-placeholder",
+      "@tiptap/extension-text-align",
+      "lucide-react",
+      "isomorphic-dompurify",
+    ],
+    plugins: [
+      peerDepsExternal(),
+      resolve({
+        browser: true,
+        preferBuiltins: false,
+        dedupe: ["react", "react-dom"],
+      }),
+      commonjs(),
+      typescript({
+        tsconfig: "./tsconfig.json",
+        declaration: false,
+        exclude: ["**/*.test.*", "**/*.spec.*"],
+      }),
+      postcss({
+        extract: true,
+        minimize: true,
+        plugins: [tailwindcss, autoprefixer],
+      }),
+      replace({
+        "process.env.NODE_ENV": JSON.stringify("production"),
+        preventAssignment: true,
+      }),
+    ],
+  },
 ];

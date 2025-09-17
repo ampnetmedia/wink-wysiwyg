@@ -23,12 +23,9 @@ import Toolbar from "./Toolbar";
 import { Editor as TiptapEditor } from "@tiptap/react";
 
 /**
- * W-Ink WYSIWYG Editor Component
- *
- * A modern, extensible WYSIWYG editor built with TipTap and React.
- * Supports @mentions, #hashtags, and a plugin system for extensibility.
+ * Internal client-only editor implementation. Do not export directly.
  */
-const WInkEditor: React.FC<WInkEditorProps> = ({
+const EditorImpl: React.FC<WInkEditorProps> = ({
   content = "",
   placeholder = "Start typing...",
   editable = true,
@@ -46,6 +43,8 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
   theme = "light",
   mode = "wysiwyg",
   primaryColor,
+  immediatelyRender = true,
+  hydrationStrategy = "none",
   enableMentions = true,
   enableHashtags = true,
   enableImages = true,
@@ -323,6 +322,20 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
     },
   });
 
+  // Optional defer of any heavy work post-mount
+  useEffect(() => {
+    if (!editor) return;
+    if (hydrationStrategy === "afterMount") {
+      // no-op; editor already created, but heavy work could be scheduled here
+    } else if (hydrationStrategy === "rAF") {
+      if (typeof window !== "undefined") {
+        window.requestAnimationFrame(() => {
+          // hook for future defers
+        });
+      }
+    }
+  }, [editor, hydrationStrategy]);
+
   // Set up drag and drop functionality after editor is created
   useDragDrop({
     editor,
@@ -489,6 +502,49 @@ const WInkEditor: React.FC<WInkEditorProps> = ({
       </div>
     </div>
   );
+};
+
+/**
+ * SSR-safe wrapper that defers client initialization and avoids hydration mismatches.
+ */
+const WInkEditor: React.FC<WInkEditorProps> = (props) => {
+  const [isClient, setIsClient] = useState(false);
+  const [shouldInit, setShouldInit] = useState(false);
+
+  const strategy = props.hydrationStrategy ?? "none";
+  const immediate = props.immediatelyRender ?? typeof window !== "undefined";
+
+  useEffect(() => {
+    setIsClient(true);
+    if (immediate) {
+      setShouldInit(true);
+      return;
+    }
+    if (strategy === "afterMount") {
+      const t = setTimeout(() => setShouldInit(true), 0);
+      return () => clearTimeout(t);
+    }
+    if (strategy === "rAF") {
+      const id = requestAnimationFrame(() => setShouldInit(true));
+      return () => cancelAnimationFrame(id);
+    }
+    // default: none -> initialize on mount anyway
+    setShouldInit(true);
+  }, [immediate, strategy]);
+
+  // During SSR or before client init, render a stable placeholder
+  if (!isClient || !shouldInit) {
+    return (
+      <div className="wink-editor loading">
+        <div className="flex items-center justify-center p-4">
+          <div className="wink-spinner"></div>
+          <span className="ml-2 text-gray-500">Loading editor...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return <EditorImpl {...props} />;
 };
 
 export default WInkEditor;

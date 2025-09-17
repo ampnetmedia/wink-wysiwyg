@@ -97,6 +97,10 @@ export interface WInkEditorProps extends WInkEditorConfig {
   mode?: EditorMode;
   /** Primary color for theming (hex color code) */
   primaryColor?: string;
+  /** Control whether TipTap initializes immediately (SSR-safe default). If omitted, defaults to false during SSR and true on the client. */
+  immediatelyRender?: boolean;
+  /** Built-in hydration/initialization strategy to avoid hydration mismatches in SSR apps */
+  hydrationStrategy?: "none" | "afterMount" | "rAF";
   /** Custom toolbar configuration */
   toolbar?: ToolbarGroup[];
   /** Whether to enable mentions */

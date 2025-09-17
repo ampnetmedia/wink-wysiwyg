@@ -1,7 +1,5 @@
 # W-Ink WYSIWYG Editor
 
-v0.2.3
-
 A modern, extensible WYSIWYG editor for React applications with @mentions and #hashtags support.
 
 [![npm version](https://badge.fury.io/js/%40ampnet%2Fwink-wysiwyg.svg)](https://badge.fury.io/js/%40ampnet%2Fwink-wysiwyg)
@@ -45,6 +43,65 @@ function App() {
       enableMentions={true}
       enableHashtags={true}
     />
+  );
+}
+```
+
+## Next.js 15 App Router Integration
+
+For Next.js 15 with App Router, use the client-only entrypoint to avoid SSR hydration issues:
+
+```tsx
+"use client";
+import dynamic from "next/dynamic";
+
+const WInkEditor = dynamic(
+  () => import("@ampnet/wink-wysiwyg/client").then((m) => m.WInkEditor),
+  { ssr: false }
+);
+
+export default function RichTextEditor({
+  initialContent,
+}: {
+  initialContent: string;
+}) {
+  return (
+    <WInkEditor
+      content={initialContent}
+      onChange={(content) => console.log(content)}
+      immediatelyRender={false}
+      hydrationStrategy="afterMount"
+      enableMentions={true}
+      enableHashtags={true}
+    />
+  );
+}
+```
+
+### SSR-Safe Content Display
+
+For displaying editor content in Server Components:
+
+```tsx
+import { WInkRenderer } from "@ampnet/wink-wysiwyg";
+
+export default function ContentDisplay({ html }: { html: string }) {
+  return <WInkRenderer content={html} className="prose max-w-none" />;
+}
+```
+
+### NoSSR Wrapper
+
+For other client-only components:
+
+```tsx
+import { WInkNoSSR } from "@ampnet/wink-wysiwyg";
+
+export default function ClientOnlyComponent() {
+  return (
+    <WInkNoSSR fallback={<div>Loading...</div>}>
+      <WInkEditor content="<p>Client-only content</p>" />
+    </WInkNoSSR>
   );
 }
 ```
@@ -354,6 +411,22 @@ wink-wysiwyg/
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
+
+## SSR Troubleshooting
+
+If you encounter hydration errors in Next.js or other SSR frameworks:
+
+1. **Use the client entrypoint**: Import from `@ampnet/wink-wysiwyg/client`
+2. **Disable immediate rendering**: Set `immediatelyRender={false}`
+3. **Use hydration strategy**: Try `hydrationStrategy="afterMount"` or `hydrationStrategy="rAF"`
+4. **Wrap with NoSSR**: Use `<WInkNoSSR>` for client-only components
+5. **Use dynamic imports**: Use Next.js `dynamic()` with `{ ssr: false }`
+
+Common error patterns:
+
+- `Hydration failed because the initial UI does not match` → Use client entrypoint
+- `ReferenceError: window is not defined` → Use `immediatelyRender={false}`
+- `Cannot read properties of undefined` → Use `hydrationStrategy="afterMount"`
 
 ## Support
 
