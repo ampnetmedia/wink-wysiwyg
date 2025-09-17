@@ -6,6 +6,9 @@ export { default as Toolbar } from "./components/Toolbar";
 export { default as WInkNoSSR } from "./components/WInkNoSSR";
 export { default as WInkRenderer } from "./components/WInkRenderer";
 
+// Default export for convenience
+export { default } from "./components/WInkEditor";
+
 // Hooks
 export { useWInkEditor } from "./hooks/useWInkEditor";
 export { useMentions } from "./hooks/useMentions";
@@ -68,4 +71,7 @@ export { HashtagHighlight } from "./extensions/HashtagHighlight";
 import "./styles/wink.css";
 
 // Version
-export const VERSION = "0.1.0";
+export const VERSION = "0.2.5";
+
+// Re-export TipTap Editor type for convenience
+export type { Editor } from "@tiptap/react";

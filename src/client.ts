@@ -4,6 +4,9 @@ export { default as Toolbar } from "./components/Toolbar";
 export { default as WInkNoSSR } from "./components/WInkNoSSR";
 export { default as WInkRenderer } from "./components/WInkRenderer";
 
+// Default export for convenience
+export { default } from "./components/WInkEditor";
+
 export { useWInkEditor } from "./hooks/useWInkEditor";
 export { useMentions } from "./hooks/useMentions";
 export { useHashtags } from "./hooks/useHashtags";

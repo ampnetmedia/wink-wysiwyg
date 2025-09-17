@@ -1,6 +1,6 @@
 {
   "name": "@ampnet/wink-wysiwyg",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A modern, extensible WYSIWYG editor for React applications with @mentions and #hashtags support",
   "type": "module",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
       "import": "./dist/index.esm.js"
     },
     "./client": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/client.d.ts",
       "import": "./dist/client.js"
     },
     "./dist/index.css": "./dist/index.css",
@@ -22,7 +22,8 @@
   "sideEffects": false,
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "NEXTJS_INTEGRATION.md"
   ],
   "scripts": {
     "build": "rollup -c rollup.config.mjs",

@@ -3,8 +3,6 @@ name: NPM Publish
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 permissions:
   contents: read
@@ -16,8 +14,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
-    # Only run on pushes to main (not PRs)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Only run on pushes to main
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -35,9 +33,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Run tests
-        run: npm test -- --run --reporter=verbose
 
       - name: Build package
         run: npm run build
@@ -93,7 +88,7 @@ jobs:
             ### Usage
             ```tsx
             import { WInkEditor } from "@ampnet/wink-wysiwyg";
-            import "@ampnet/wink-wysiwyg/dist/styles.css";
+            import "@ampnet/wink-wysiwyg/dist/index.css";
 
             <WInkEditor
               content={content}

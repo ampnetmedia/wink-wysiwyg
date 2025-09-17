@@ -192,6 +192,7 @@ const EditorImpl: React.FC<WInkEditorProps> = ({
     content,
     editable,
     autofocus: autoFocus,
+    immediatelyRender,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange?.(html);
